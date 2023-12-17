@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "641997950880",
+    "project_id": "tara-quiz-bup",
+    "storage_bucket": "tara-quiz-bup.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:641997950880:android:5dcbfefbaec2f4b5b21ec5",
+        "android_client_info": {
+          "package_name": "com.example.taraquizbup"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDWR8QX8JwJnbKGDIdOlDyIJcR3v9sEtqw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
