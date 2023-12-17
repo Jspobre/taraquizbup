@@ -26,7 +26,7 @@ class _ProDashboardState extends State<ProDashboard> {
 
   String fileURL = "";
   var ref = FirebaseDatabase.instance.ref();
-
+  int? selectedIndex;
   Map tempMap = {};
   Map tempMap2 = {};
 
@@ -193,7 +193,7 @@ class _ProDashboardState extends State<ProDashboard> {
               ? _body()
               : const Center(
                   child: Text(
-                      "No Subject to created yet.\nClick '+' to create a Subject."),
+                      "No Subject created yet.\nClick '+' to create a Subject."),
                 )
           : const Center(
               child: Column(
@@ -231,7 +231,7 @@ class _ProDashboardState extends State<ProDashboard> {
                   context,
                   MaterialPageRoute(
                       builder: (context) => ProCommonPage(
-                        finalStudentListForProfs: {},
+                            finalStudentListForProfs: {},
                             title: "My Profile",
                             name: proDashboardModel.dName,
                             emailId: proDashboardModel.eMailId,
@@ -257,7 +257,7 @@ class _ProDashboardState extends State<ProDashboard> {
                   context,
                   MaterialPageRoute(
                       builder: (context) => ProCommonPage(
-                        finalStudentListForProfs: {},
+                            finalStudentListForProfs: {},
                             title: "Support",
                             name: proDashboardModel.dName,
                             emailId: proDashboardModel.eMailId,
@@ -314,241 +314,130 @@ class _ProDashboardState extends State<ProDashboard> {
     return error;
   }
 
-  Widget _body() {
-    if (proDashboardModel.profilePhotoURL == "default_str")
-      proDashboardModel.profilePhotoURL = AppConstants.defaultURLConstant;
+  Future<void> deleteSubject(String proDashboardModeluid, int index) async {
+    try {
+      String subjectCode = subjectsCode[index];
 
-    return Container(
-      height: double.infinity,
-      width: double.infinity,
-      decoration: const BoxDecoration(
-        image: DecorationImage(
-          colorFilter: ColorFilter.linearToSrgbGamma(),
-          alignment: Alignment.center,
-          scale: 1,
-          opacity: 1,
-          fit: BoxFit.fill,
-          image: AssetImage(FileConstants.assetBackground),
+      // Deleting the subject from ProfessorsDetails
+      await FirebaseFirestore.instance
+          .collection('ProfessorsDetails')
+          .doc(proDashboardModeluid)
+          .update({
+        'Subject.$subjectCode': FieldValue.delete(),
+      });
+
+      // delete the subject from the student side
+      QuerySnapshot studentSnapshot =
+          await FirebaseFirestore.instance.collection('StudentsDetails').get();
+
+      for (QueryDocumentSnapshot doc in studentSnapshot.docs) {
+        Map<String, dynamic> studentData = doc.data() as Map<String, dynamic>;
+        if (studentData.containsKey('Subject')) {
+          Map<String, dynamic> subjects =
+              studentData['Subject'] as Map<String, dynamic>;
+          if (subjects.containsKey(subjectCode)) {
+            subjects.remove(subjectCode);
+
+            await FirebaseFirestore.instance
+                .collection('StudentsDetails')
+                .doc(doc.id)
+                .update({'Subject': subjects});
+          }
+        }
+      }
+
+      print(
+          'Subject data deleted successfully from both ProfessorsDetails and StudentDetails');
+    } catch (e) {
+      print('Error deleting subject data: $e');
+    }
+  }
+
+  Widget _body() {
+    return GestureDetector(
+      onLongPress: () {
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text('Delete Subject?'),
+              content: Text('Are you sure you want to delete this subject?'),
+              actions: <Widget>[
+                TextButton(
+                  child: Text('Cancel'),
+                  onPressed: () {
+                    Navigator.of(context).pop(); // Close the dialog
+                  },
+                ),
+                TextButton(
+                  child: Text('Delete'),
+                  onPressed: () async {
+                    if (selectedIndex != null) {
+                      await deleteSubject(
+                          proDashboardModel.uid, selectedIndex!);
+                      setState(() {
+                        subjects.removeAt(selectedIndex!);
+                        subjectsCode.removeAt(selectedIndex!);
+                        selectedIndex =
+                            null; // Reset selected index after deletion
+                      });
+                    }
+                    Navigator.of(context).pop(); // Close the dialog
+                  },
+                ),
+              ],
+            );
+          },
+        );
+      },
+      child: Container(
+        height: double.infinity,
+        width: double.infinity,
+        decoration: const BoxDecoration(
+          image: DecorationImage(
+            colorFilter: ColorFilter.linearToSrgbGamma(),
+            alignment: Alignment.center,
+            scale: 1,
+            opacity: 1,
+            fit: BoxFit.fill,
+            image: AssetImage(FileConstants.assetBackground),
+          ),
         ),
-      ),
-      child: Padding(
-        padding: EdgeInsets.only(
-            bottom: MediaQuery.of(context).size.height * 8 / 100),
-        child: ListView.builder(
-            itemBuilder: (context, index) => Padding(
-                  padding: EdgeInsets.only(
+        child: Padding(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).size.height * 8 / 100,
+          ),
+          child: ListView.builder(
+            itemBuilder: (context, index) => subjects.length > index
+                ? Padding(
+                    padding: EdgeInsets.only(
                       left: MediaQuery.of(context).size.width * 10 / 100,
                       right: MediaQuery.of(context).size.width * 10 / 100,
                       bottom: MediaQuery.of(context).size.height * 1.5 / 100,
-                      top: MediaQuery.of(context).size.height * 1.5 / 100),
-                  child: Card(
-                    child: ListTile(
-                      title: Text(subjects[index]["Name"]),
-                      subtitle: Text(
-                        "Subject Code: ${subjectsCode[index]}\nPassword: ${subjects[index]["Password"]}\n",
-                        maxLines: 3,
-                      ),
-                      isThreeLine: true,
-                      onTap: () {
-                        Map<String, dynamic> finalStudentMap = {};
-                        List tempList001 = List.empty(growable: true);
-                        Map tempMap001 = Map();
-                        Future.delayed(Duration(seconds: 3), () {
-                          FirebaseFirestore.instance
-                              .collection('ProfessorsDetails')
-                              .doc(proDashboardModel.uid)
-                              .get()
-                              .then((value) {
-                            if (value.exists) {
-                              tempMap001
-                                  .addAll(value.data()?["Subject"] as Map);
-                            }
-                            tempList001.addAll(tempMap001[subjectsCode[index]]
-                                    ["StudentList"]
-                                .values);
-                            finalStudentMap =
-                                tempList001.reduce((value, element) {
-                              value.addAll(element);
-                              return value;
-                            });
-                             finalStudentMap = Map.fromEntries(
-                                finalStudentMap.entries.toList()..sort((e1, e2) => e1.value.compareTo(e2.value)));
-                          });
-                        });
-                        Map tempMap = Map();
-                        if (tempMap2[subjectsCode[index]] != null) {
-                          tempMap = tempMap2[subjectsCode[index]];
-                        }
-                        tempMap.forEach((key, value) {
-                          testList.add(key);
-                          testDetailsCode.add(value);
-                        });
-                        for (var i = 0; i < studentSubjectCode.length; i++) {
-                          if (studentSubjectCode[i] == subjectsCode[index]) {
-                            studentsDetails = students[i];
-                          }
-                        }
-
-                        final databaseReference =
-                            FirebaseDatabase.instance.ref();
-                        List finalOverListList = List.empty(growable: true);
-
-                        List finalIndividualList = List.empty(growable: true);
-
-                        Map finalGroupList = {};
-                        Future.delayed(Duration(seconds: 3), () {
-                          databaseReference
-                              .child(
-                                  "overAllScore/${proDashboardModel.uid}/${subjectsCode[index]}")
-                              .get()
-                              .then((value) {
-                            Map temp = Map();
-                            List tempKey = List.empty(growable: true);
-                            List tempValue = List.empty(growable: true);
-                            Map tempFinalScore = Map();
-                            Map tempFinalName = Map();
-
-                            Map tempFinalPhoto = Map();
-                            if (value.exists) {
-                              temp = value.value as Map;
-                              temp.forEach((key, value) {
-                                tempKey.add(key);
-                                tempValue.add(value);
-                              });
-                              if (tempKey.isNotEmpty) {
-                                for (int i = 0; i < tempKey.length; i++) {
-                                  tempFinalScore.addEntries(
-                                      {i: tempValue[i]["Score"]}.entries);
-                                  tempFinalName.addEntries(
-                                      {i: tempValue[i]["Name"]}.entries);
-                                  tempFinalPhoto.addEntries(
-                                      {i: tempValue[i]["photoURL"]}.entries);
-                                }
-                                Map sortedByValueMap = Map.fromEntries(
-                                    tempFinalScore.entries.toList()
-                                      ..sort((e1, e2) =>
-                                          e1.value.compareTo(e2.value)));
-
-                                List tempKey1 = List.empty(growable: true);
-                                List tempValue1 = List.empty(growable: true);
-                                sortedByValueMap.forEach((key, value) {
-                                  tempKey1.add(key);
-                                  tempValue1.add(value);
-                                });
-                                for (int i = tempKey1.length - 1; i >= 0; i--) {
-                                  finalOverListList.add({
-                                    "Score": tempValue1[i],
-                                    "Name": tempFinalName[tempKey1[i]],
-                                    "photoURL": tempFinalPhoto[tempKey1[i]]
-                                  });
-                                }
-                              }
-                            }
-                          });
-                        }).whenComplete(() {
-                          Future.delayed(Duration(seconds: 3), () {
-                            databaseReference
-                                .child(
-                                "individualScore/${proDashboardModel.uid}/${subjectsCode[index]}")
-                                .get()
-                                .then((valueIndi) {
-                              Map temp = Map();
-                              List tempKey = List.empty(growable: true);
-                              List tempValue = List.empty(growable: true);
-                              Map tempFinalScore = Map();
-                              Map tempFinalName = Map();
-
-                              Map tempFinalPhoto = Map();
-                              if (valueIndi.exists) {
-                                temp = valueIndi.value as Map;
-                                temp.forEach((key, value) {
-                                  tempKey.add(key);
-                                  tempValue.add(value);
-                                });
-                                if (tempKey.isNotEmpty) {
-                                  for (int i = 0; i < tempKey.length; i++) {
-                                    tempFinalScore.addEntries(
-                                        {i: tempValue[i]["Score"]}.entries);
-                                    tempFinalName.addEntries(
-                                        {i: tempValue[i]["Name"]}.entries);
-                                    tempFinalPhoto.addEntries(
-                                        {i: tempValue[i]["photoURL"]}.entries);
-                                  }
-                                  Map sortedByValueMap = Map.fromEntries(
-                                      tempFinalScore.entries.toList()
-                                        ..sort((e1, e2) =>
-                                            e1.value.compareTo(e2.value)));
-
-                                  List tempKey1 = List.empty(growable: true);
-                                  List tempValue1 = List.empty(growable: true);
-                                  sortedByValueMap.forEach((key, value) {
-                                    tempKey1.add(key);
-                                    tempValue1.add(value);
-                                  });
-                                  for (int i = tempKey1.length - 1; i >= 0; i--) {
-                                    finalIndividualList.add({
-                                      "Score": tempValue1[i],
-                                      "Name": tempFinalName[tempKey1[i]],
-                                      "photoURL": tempFinalPhoto[tempKey1[i]]
-                                    });
-                                  }
-                                }
-                              }
-                            });
-                          }).whenComplete(() {
-                            Future.delayed(Duration(seconds: 3), () {
-                              print("temp");
-
-                              databaseReference
-                                  .child(
-                                  "quizRoom/${proDashboardModel.uid}/${subjectsCode[index]}")
-                                  .get()
-                                  .then((value) {
-                                if (value.exists) {
-                                  finalGroupList = value.value as Map;
-
-                                }
-                              });
-                            }).whenComplete(() {
-                              Future.delayed(Duration(seconds: 3), () {
-                                Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                      builder: (context) => ProCommonPage(
-                                        finalStudentListForProfs: finalStudentMap,
-                                        title: 'Tara Quiz Tests',
-                                        subTitle: subjects[index]["Name"],
-                                        name: proDashboardModel.dName,
-                                        emailId: proDashboardModel.eMailId,
-                                        url: proDashboardModel.profilePhotoURL,
-                                        studentORProf: "Professor",
-                                        uid: proDashboardModel.uid,
-                                        subjectCode: subjectsCode[index],
-                                        subjectName: subjects[index]["Name"],
-                                        testDetailsList: testDetailsCode,
-                                        testCodeList: testList,
-                                        studentCodeList: studentSubjectCode,
-                                        studentDetailsList: studentsDetails,
-                                        finalOverAllList: finalOverListList,
-                                        finalIndividualList: finalIndividualList,
-                                        finalGroupList: finalGroupList,
-                                      ),
-                                      maintainState: true,
-                                      fullscreenDialog: false),
-                                );
-                              });
-
-                            });
-
-                          });
-
-                        });
-
-
-                      },
+                      top: MediaQuery.of(context).size.height * 1.5 / 100,
                     ),
-                  ),
-                ),
-            itemCount: subjects.length),
+                    child: Card(
+                      child: ListTile(
+                        title: Text(subjects[index]["Name"]),
+                        subtitle: Text(
+                          "Subject Code: ${subjectsCode[index]}\nPassword: ${subjects[index]["Password"]}\n",
+                          maxLines: 3,
+                        ),
+                        isThreeLine: true,
+                        onTap: () {
+                          setState(() {
+                            selectedIndex = index;
+                          });
+                          // Handle other functionalities when a subject is tapped
+                          // ... (existing functionality)
+                        },
+                      ),
+                    ),
+                  )
+                : SizedBox.shrink(), // Hide the subject if it doesn't exist
+            itemCount: subjects.length,
+          ),
+        ),
       ),
     );
   }

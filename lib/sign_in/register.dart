@@ -18,11 +18,11 @@ import '../mixins/mixins.dart';
 import 'model/sign_in_model.dart';
 
 class Register extends StatefulWidget {
-final bool isChangePassword;
+  final bool isChangePassword;
 
-Register({Key? key, required this.isChangePassword}) : super(key: key);
-@override
-_RegisterState createState() => _RegisterState();
+  Register({Key? key, required this.isChangePassword}) : super(key: key);
+  @override
+  _RegisterState createState() => _RegisterState();
 }
 
 class _RegisterState extends State<Register> {
@@ -31,33 +31,37 @@ class _RegisterState extends State<Register> {
 
   final formKey = GlobalKey<FormState>();
   String selectedStudentProfessorValue = 'Please select';
-  List<DropdownMenuItem<String>> get dropdownStudentOrProfessor{
+  List<DropdownMenuItem<String>> get dropdownStudentOrProfessor {
     List<DropdownMenuItem<String>> menuItems = [
-      const DropdownMenuItem(value: "Please select", child: Text("Please select")),
+      const DropdownMenuItem(
+          value: "Please select", child: Text("Please select")),
       const DropdownMenuItem(value: "Student", child: Text("I am a Student.")),
-      const DropdownMenuItem(value: "Professor", child: Text("I am a Professor")),
+      const DropdownMenuItem(
+          value: "Professor", child: Text("I am a Professor")),
     ];
     return menuItems;
   }
 
   Future<void> _uploadImage() async {
     final pickedFile =
-    await ImagePicker().pickImage(source: ImageSource.gallery);
+        await ImagePicker().pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
       setState(() {
         _pickedFile = pickedFile;
       });
     }
   }
+
   Future<void> _uploadCamera() async {
     final pickedFile =
-    await ImagePicker().pickImage(source: ImageSource.camera);
+        await ImagePicker().pickImage(source: ImageSource.camera);
     if (pickedFile != null) {
       setState(() {
         _pickedFile = pickedFile;
       });
     }
   }
+
   void _clear() {
     setState(() {
       isImageSelected = false;
@@ -65,82 +69,82 @@ class _RegisterState extends State<Register> {
       _croppedFile = null;
     });
   }
+
   Widget _uploaderCard() {
     return Column(
-      children: [Padding(
-        padding: EdgeInsets.only(
-          top: ((MediaQuery.of(context).size.height * 5) / 100),
-          left: ((MediaQuery.of(context).size.width * 5) / 100),
-          right: ((MediaQuery.of(context).size.width * 2) / 100),
-          bottom:
-          ((MediaQuery.of(context).size.height * 2) / 100),
-        ),
-        child: Center(
-          child: Card(
-            elevation: 4.0,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16.0),
-            ),
-            child: SizedBox(
-              width: kIsWeb ? 380.0 : 320.0,
-              height: 300.0,
-              child: Column(
-                mainAxisSize: MainAxisSize.max,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Center(
-                      child: SizedBox(height: 55,child: Image.asset(FileConstants.defaultUser)),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Center(
-                      child: Text(
-                        'Upload your photo',
-                        style: kIsWeb
-                            ? Theme.of(context)
-                            .textTheme
-                            .headlineSmall!
-                            .copyWith(
-                            color: Theme.of(context).highlightColor)
-                            : Theme.of(context)
-                            .textTheme
-                            .bodyMedium!
-                            .copyWith(
-                            color:
-                            Theme.of(context).highlightColor),
+      children: [
+        Padding(
+          padding: EdgeInsets.only(
+            top: ((MediaQuery.of(context).size.height * 5) / 100),
+            left: ((MediaQuery.of(context).size.width * 5) / 100),
+            right: ((MediaQuery.of(context).size.width * 2) / 100),
+            bottom: ((MediaQuery.of(context).size.height * 2) / 100),
+          ),
+          child: Center(
+            child: Card(
+              elevation: 4.0,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16.0),
+              ),
+              child: SizedBox(
+                width: kIsWeb ? 380.0 : 320.0,
+                height: 300.0,
+                child: Column(
+                  mainAxisSize: MainAxisSize.max,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Center(
+                        child: SizedBox(
+                            height: 55,
+                            child: Image.asset(FileConstants.defaultUser)),
                       ),
                     ),
-                  ),
-
-                  Padding(
-                    padding: const EdgeInsets.only(top: 10.0, bottom: 5.0),
-                    child: ElevatedButton(
-                      onPressed: () {
-                        _uploadImage();
-                      },
-                      child: const Text('Gallery'),
+                    Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Center(
+                        child: Text(
+                          'Upload your photo',
+                          style: kIsWeb
+                              ? Theme.of(context)
+                                  .textTheme
+                                  .headlineSmall!
+                                  .copyWith(
+                                      color: Theme.of(context).highlightColor)
+                              : Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium!
+                                  .copyWith(
+                                      color: Theme.of(context).highlightColor),
+                        ),
+                      ),
                     ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 5.0, bottom: 12.0),
-                    child: ElevatedButton(
-                      onPressed: () {
-                        _uploadCamera();
-                      },
-                      child: const Text('Camera'),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 10.0, bottom: 5.0),
+                      child: ElevatedButton(
+                        onPressed: () {
+                          _uploadImage();
+                        },
+                        child: const Text('Gallery'),
+                      ),
                     ),
-                  ),
-                ],
+                    Padding(
+                      padding: const EdgeInsets.only(top: 5.0, bottom: 12.0),
+                      child: ElevatedButton(
+                        onPressed: () {
+                          _uploadCamera();
+                        },
+                        child: const Text('Camera'),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
         ),
-      ),
-
       ],
     );
   }
@@ -178,9 +182,9 @@ class _RegisterState extends State<Register> {
 
   @override
   Widget build(BuildContext context) {
-
     bool viewPass = false;
-    void create(eMailId, password, fName, lName, mobileNo, file, studentOrProfessor) {
+    void create(
+        eMailId, password, fName, lName, mobileNo, file, studentOrProfessor) {
       try {
         String displayName = "$fName $lName";
         FirebaseAuth.instance
@@ -194,22 +198,21 @@ class _RegisterState extends State<Register> {
           final storageRef = FirebaseStorage.instance.ref();
 
           // Create a reference to "mountains.jpg"
-          final mountainsRef = storageRef.child( "${value.user?.uid}" +".jpg");
+          final mountainsRef = storageRef.child("${value.user?.uid}" + ".jpg");
           mountainsRef.putFile(file).then((p0) async {
-
             mountainsRef.getDownloadURL().then((valueImg) async {
-
               value.user?.updatePhotoURL(valueImg);
               value.user?.reload();
-              Map tempMap = {"Name" : displayName,"photoURL":valueImg};
-              if(studentOrProfessor!= "Student") {
+              Map tempMap = {"Name": displayName, "photoURL": valueImg};
+              if (studentOrProfessor != "Student") {
                 final databaseReference = FirebaseDatabase.instance.ref();
                 await databaseReference
                     .child("forStudents/profrssorsList")
                     .update({"${value.user?.uid}": tempMap});
               }
 
-              FirebaseAuth.instance.verifyPhoneNumber(
+              FirebaseAuth.instance
+                  .verifyPhoneNumber(
                 phoneNumber: signInModel.mobileNumber,
                 timeout: const Duration(seconds: 5),
                 verificationCompleted: (credential) async {
@@ -217,19 +220,15 @@ class _RegisterState extends State<Register> {
                       .updatePhoneNumber(credential);
 
                   customDialog.customSuccessDialog(
-                      "Success", context, false,  false);
+                      "Success", context, false, false);
                 },
-
                 verificationFailed: (_) {
-
                   customDialog.customErrorDialog(
-                  "OTP verification failed. Try again.",
-                  context,
+                    "OTP verification failed. Try again.",
+                    context,
                   );
-
                 },
-                codeSent: (verificationId, [forceResendingToken])  {
-
+                codeSent: (verificationId, [forceResendingToken]) {
                   showDialog(
                       barrierDismissible: false,
                       context: context,
@@ -243,12 +242,14 @@ class _RegisterState extends State<Register> {
                             ),
                             content: Padding(
                               padding: EdgeInsets.only(
-                                left:
-                                ((MediaQuery.of(context).size.width * 8) / 100),
-                                right:
-                                ((MediaQuery.of(context).size.width * 8) / 100),
-                                bottom: ((MediaQuery.of(context).size.height * 2) /
+                                left: ((MediaQuery.of(context).size.width * 8) /
                                     100),
+                                right:
+                                    ((MediaQuery.of(context).size.width * 8) /
+                                        100),
+                                bottom:
+                                    ((MediaQuery.of(context).size.height * 2) /
+                                        100),
                               ),
                               child: StatefulBuilder(
                                 builder: (context, setState) {
@@ -296,16 +297,19 @@ class _RegisterState extends State<Register> {
                                   ),
                                   onPressed: () {
                                     final PhoneAuthCredential credential =
-                                    PhoneAuthProvider.credential(
+                                        PhoneAuthProvider.credential(
                                       verificationId: verificationId,
                                       smsCode: otp,
                                     );
-                                    FirebaseAuth.instance.currentUser!.updatePhoneNumber(credential).then((value1) {                                value.user?.reload();
-                                    Navigator.of(context, rootNavigator: true).pop();
-                                    customDialog.customSuccessDialog(
-                                        "Success", context, false,  false);
+                                    FirebaseAuth.instance.currentUser!
+                                        .updatePhoneNumber(credential)
+                                        .then((value1) {
+                                      value.user?.reload();
+                                      Navigator.of(context, rootNavigator: true)
+                                          .pop();
+                                      customDialog.customSuccessDialog(
+                                          "Success", context, false, false);
                                     });
-
                                   }),
                             ]);
                       });
@@ -313,47 +317,50 @@ class _RegisterState extends State<Register> {
                   // get the SMS code from the user somehow (probably using a text field)
                 },
                 codeAutoRetrievalTimeout: (String verificationId) {},
-              ).onError((error, stackTrace) {
+              )
+                  .onError((error, stackTrace) {
                 customDialog.customErrorDialog(
                   "Authentication error.",
                   context,
                 );
-              }).then((po) => selectedStudentProfessorValue == "Student" ? FirebaseFirestore.instance
-                  .collection('StudentsDetails')
-                  .doc(value.user?.uid)
-                  .set({
-                'name' :  displayName,
-                'email id' : eMailId,
-                'mobile' : mobileNo,
-                'studentOrProfessor' :  selectedStudentProfessorValue,
-                'photoUrl' : valueImg,
-              }).onError((error, stackTrace) {
-                customDialog.customErrorDialog(
-                "error uploading details",
-                context,
-                );
-
-              }): FirebaseFirestore.instance
-                  .collection('ProfessorsDetails')
-                  .doc(value.user?.uid)
-                  .set({
-                'name' :  displayName,
-                'email id' : eMailId,
-                'mobile' : mobileNo,
-                'studentOrProfessor' :  selectedStudentProfessorValue,
-                'photoUrl' : valueImg,
-              }).onError((error, stackTrace) {
-                customDialog.customErrorDialog(
-                  "error uploading details",
-                  context,
-                );}));
-
+              }).then((po) => selectedStudentProfessorValue == "Student"
+                      ? FirebaseFirestore.instance
+                          .collection('StudentsDetails')
+                          .doc(value.user?.uid)
+                          .set({
+                          'name': displayName,
+                          'email id': eMailId,
+                          'mobile': mobileNo,
+                          'studentOrProfessor': selectedStudentProfessorValue,
+                          'photoUrl': valueImg,
+                        }).onError((error, stackTrace) {
+                          customDialog.customErrorDialog(
+                            "error uploading details",
+                            context,
+                          );
+                        })
+                      : FirebaseFirestore.instance
+                          .collection('ProfessorsDetails')
+                          .doc(value.user?.uid)
+                          .set({
+                          'name': displayName,
+                          'email id': eMailId,
+                          'mobile': mobileNo,
+                          'studentOrProfessor': selectedStudentProfessorValue,
+                          'photoUrl': valueImg,
+                        }).onError((error, stackTrace) {
+                          customDialog.customErrorDialog(
+                            "error uploading details",
+                            context,
+                          );
+                        }));
             }).onError((error, stackTrace) {
               customDialog.customErrorDialog(
                 "error uploading details",
                 context,
               );
-            });}).onError((error, stackTrace) {
+            });
+          }).onError((error, stackTrace) {
             customDialog.customErrorDialog(
               "error uploading photo",
               context,
@@ -409,8 +416,14 @@ class _RegisterState extends State<Register> {
         await Connectivity().checkConnectivity().then((value) {
           if (value == ConnectivityResult.mobile ||
               value == ConnectivityResult.wifi) {
-            create(signInModel.eMailId, signInModel.password, signInModel.fName,
-                signInModel.lName, signInModel.mobileNumber, file, selectedStudentProfessorValue);
+            create(
+                signInModel.eMailId,
+                signInModel.password,
+                signInModel.fName,
+                signInModel.lName,
+                signInModel.mobileNumber,
+                file,
+                selectedStudentProfessorValue);
           } else {
             customDialog.customErrorDialog(
               'Please check your internet connectivity.',
@@ -418,17 +431,17 @@ class _RegisterState extends State<Register> {
             );
           }
         });
-      } else if(!isSelected && isImageSelected){
+      } else if (!isSelected && isImageSelected) {
         customDialog.customErrorDialog(
           'Please select whether you are a Student or Professor.',
           context,
         );
-      } else if (!isImageSelected && !isSelected){
+      } else if (!isImageSelected && !isSelected) {
         customDialog.customErrorDialog(
           'Please upload photo and select whether you are a Student or Professor.',
           context,
         );
-      } else if (!isImageSelected && isSelected){
+      } else if (!isImageSelected && isSelected) {
         customDialog.customErrorDialog(
           'Please upload photo.',
           context,
@@ -478,7 +491,6 @@ class _RegisterState extends State<Register> {
       }
     }
 
-
     _body() {
       return widget.isChangePassword
           ?
@@ -503,7 +515,6 @@ class _RegisterState extends State<Register> {
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: <Widget>[
-
                       Padding(
                         padding: EdgeInsets.only(
                           top: ((MediaQuery.of(context).size.height * 5) / 100),
@@ -832,20 +843,24 @@ class _RegisterState extends State<Register> {
                               style: Theme.of(context).textTheme.headlineSmall,
                             ),
                           ),
-                          _croppedFile != null || _pickedFile != null ?  _imageCard() : _uploaderCard(),
-
+                          _croppedFile != null || _pickedFile != null
+                              ? _imageCard()
+                              : _uploaderCard(),
                           Padding(
                             padding: EdgeInsets.only(
-                              top: ((MediaQuery.of(context).size.height * 2) / 100),
-                              left: ((MediaQuery.of(context).size.width * 8) / 100),
-                              right: ((MediaQuery.of(context).size.width * 8) / 100),
+                              top: ((MediaQuery.of(context).size.height * 2) /
+                                  100),
+                              left: ((MediaQuery.of(context).size.width * 8) /
+                                  100),
+                              right: ((MediaQuery.of(context).size.width * 8) /
+                                  100),
                               bottom:
-                              ((MediaQuery.of(context).size.height * 2) / 100),
+                                  ((MediaQuery.of(context).size.height * 2) /
+                                      100),
                             ),
                             child: DropdownButton<String>(
                               value: selectedStudentProfessorValue,
                               items: dropdownStudentOrProfessor,
-
                               onChanged: (value) {
                                 setState(() {
                                   if (value == "Student") {
@@ -853,27 +868,23 @@ class _RegisterState extends State<Register> {
                                       isProfessor = false;
                                       isSelected = true;
                                     });
-                                  } else  if (value == "Professor"){
+                                  } else if (value == "Professor") {
                                     setState(() {
                                       isProfessor = true;
                                       isSelected = true;
-
                                     });
-                                  }   else {
+                                  } else {
                                     setState(() {
                                       isSelected = false;
                                       isProfessor = false;
-
                                     });
                                   }
                                   selectedStudentProfessorValue = value!;
                                   signInModel.studentOrProfessor = value;
                                 });
-
                               },
                             ),
                           ),
-
                           Wrap(
                               spacing:
                                   ((MediaQuery.of(context).size.width * 5) /
@@ -1107,15 +1118,13 @@ class _RegisterState extends State<Register> {
                                 controllerPassword.text = "";
                               },
                               validator: (value) {
-
                                 if (RegExp(r"^(\+91)(\d{10})$")
-                                    .hasMatch(value!) || RegExp(r"^(\+639)\d{9}$")
-                                    .hasMatch(value) ) {
-                                return null;
+                                        .hasMatch(value!) ||
+                                    RegExp(r"^(\+639)\d{9}$").hasMatch(value)) {
+                                  return null;
                                 } else {
-                                return "Enter a valid Mobile Number.";
+                                  return "Enter a valid Mobile Number.";
                                 }
-
                               },
                             ),
                           ),
@@ -1257,6 +1266,8 @@ class _RegisterState extends State<Register> {
                                     ((MediaQuery.of(context).size.height * 4) /
                                         100)),
                             child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.blue),
                               onPressed: onPressedRegister,
                               child: const Text(
                                 'Register',
@@ -1310,7 +1321,6 @@ class _RegisterState extends State<Register> {
     }
 
     return Scaffold(
-
       appBar: AppBar(
         title: Text(widget.isChangePassword
             ? "Change Password"
@@ -1329,8 +1339,7 @@ class _RegisterState extends State<Register> {
         top: ((MediaQuery.of(context).size.height * 5) / 100),
         left: ((MediaQuery.of(context).size.width * 5) / 100),
         right: ((MediaQuery.of(context).size.width * 2) / 100),
-        bottom:
-        ((MediaQuery.of(context).size.height * 2) / 100),
+        bottom: ((MediaQuery.of(context).size.height * 2) / 100),
       ),
       child: Center(
         child: Column(
@@ -1338,24 +1347,23 @@ class _RegisterState extends State<Register> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Padding(
-              padding:
-              const EdgeInsets.symmetric(horizontal:  16.0),
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: Card(
                 elevation: 4.0,
                 child: Padding(
-                  padding: const EdgeInsets.all( 16.0),
+                  padding: const EdgeInsets.all(16.0),
                   child: _image(),
                 ),
               ),
             ),
             const SizedBox(height: 24.0),
             _menu(),
-
           ],
         ),
       ),
     );
   }
+
   Future<void> _cropImage() async {
     if (_pickedFile != null) {
       final croppedFile = await ImageCropper().cropImage(
@@ -1380,7 +1388,7 @@ class _RegisterState extends State<Register> {
               height: 520,
             ),
             viewPort:
-            const CroppieViewPort(width: 480, height: 480, type: 'circle'),
+                const CroppieViewPort(width: 480, height: 480, type: 'circle'),
             enableExif: true,
             enableZoom: true,
             showZoomer: true,
@@ -1426,11 +1434,11 @@ class _RegisterState extends State<Register> {
       return const SizedBox.shrink();
     }
   }
+
   Widget _menu() {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-
         FloatingActionButton(
           onPressed: () {
             _clear();

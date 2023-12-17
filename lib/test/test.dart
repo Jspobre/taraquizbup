@@ -19,16 +19,16 @@ class Test extends StatefulWidget {
   final String name;
   final String photoUrl;
 
-  Test(
-      {required this.uid,
-      required this.testCode,
-      required this.subCode,
-        required this.subjectCode,
-        required this.name,
-        required this.photoUrl,
-        required this.proUid,
-      required this.url,
-      });
+  Test({
+    required this.uid,
+    required this.testCode,
+    required this.subCode,
+    required this.subjectCode,
+    required this.name,
+    required this.photoUrl,
+    required this.proUid,
+    required this.url,
+  });
 
   @override
   _TestState createState() => _TestState();
@@ -49,19 +49,15 @@ class _TestState extends State<Test> {
   Map mcqImg = {};
   Map fillImg = {};
   Map tfImg = {};
-late  List<String> answersList;
+  late List<String> answersList;
 
-  late List<String> userAnwersList ;
+  late List<String> userAnwersList;
   Map sortedByValueMap = {};
   @override
   void initState() {
-
-
-
-
     readExcel().then((value) {
       bool trigger1 = false;
-       print(value.length);
+      print(value.length);
       for (int i = 0; i < value.length / 2; i++) {
         if (("${value.values.elementAt(i)}" == "MCQs" || trigger1) &&
             i < value.length / 2 &&
@@ -177,20 +173,31 @@ late  List<String> answersList;
       fillImg.forEach((key, value) {
         tempFillImage.add(value);
       });
-      for(int i =1; i<mcq.length;i++){
-        finalMcq.addEntries({tempMcq[i]:tempMcq.sublist(i+1, i+6)+tempMcqImage.sublist(i, i+6)}.entries);
+      for (int i = 1; i < mcq.length; i++) {
+        finalMcq.addEntries({
+          tempMcq[i]:
+              tempMcq.sublist(i + 1, i + 6) + tempMcqImage.sublist(i, i + 6)
+        }.entries);
 
-        i=i+5;
+        i = i + 5;
       }
       print(finalMcq);
-      for(int i =1; i<tf.length;i++){
-        finalTF.addEntries({tempTF[i]:[tempTF.elementAt(i+1)]+["","","",""]+tempTFImage.sublist(i, i+2)}.entries);
+      for (int i = 1; i < tf.length; i++) {
+        finalTF.addEntries({
+          tempTF[i]: [tempTF.elementAt(i + 1)] +
+              ["", "", "", ""] +
+              tempTFImage.sublist(i, i + 2)
+        }.entries);
         i++;
       }
       print(finalTF);
 
-      for(int i =1; i<fill.length;i++){
-        finalFill.addEntries({tempFill[i]:[tempFill.elementAt(i+1)]+["","","",""]+tempFillImage.sublist(i, i+2)}.entries);
+      for (int i = 1; i < fill.length; i++) {
+        finalFill.addEntries({
+          tempFill[i]: [tempFill.elementAt(i + 1)] +
+              ["", "", "", ""] +
+              tempFillImage.sublist(i, i + 2)
+        }.entries);
         i++;
       }
       print(finalFill);
@@ -198,37 +205,36 @@ late  List<String> answersList;
       List mcqOrder = [];
       List fillOrder = [];
       List tfOrder = [];
-      for(int i =0;i<finalMcq.length;i++){
+      for (int i = 0; i < finalMcq.length; i++) {
         mcqOrder.add(i);
       }
-      for(int i =0;i<finalFill.length;i++){
+      for (int i = 0; i < finalFill.length; i++) {
         fillOrder.add(i);
       }
-      for(int i =0;i<finalTF.length;i++){
+      for (int i = 0; i < finalTF.length; i++) {
         tfOrder.add(i);
       }
-          mcqOrder.shuffle();
+      mcqOrder.shuffle();
       fillOrder.shuffle();
       tfOrder.shuffle();
 
-        Map lengthOfVariables = {
-          "MCQs": mcq.length ~/ 6,
-          "True/False": tf.length ~/ 2,
-          "Fill up the blanks": fill.length ~/ 2
-        };
-        sortedByValueMap = Map.fromEntries(lengthOfVariables.entries.toList()
-          ..sort((e1, e2) => e1.value.compareTo(e2.value)));
-        List tempTypeList = [];
-        int i = sortedByValueMap.values.elementAt(0) + sortedByValueMap.values.elementAt(1) + sortedByValueMap.values.elementAt(2);
+      Map lengthOfVariables = {
+        "MCQs": mcq.length ~/ 6,
+        "True/False": tf.length ~/ 2,
+        "Fill up the blanks": fill.length ~/ 2
+      };
+      sortedByValueMap = Map.fromEntries(lengthOfVariables.entries.toList()
+        ..sort((e1, e2) => e1.value.compareTo(e2.value)));
+      List tempTypeList = [];
+      int i = sortedByValueMap.values.elementAt(0) +
+          sortedByValueMap.values.elementAt(1) +
+          sortedByValueMap.values.elementAt(2);
 
       Random random = Random();
 
-
-      if(i< 20 ){
+      if (i < 20) {
         for (int i = 0; i < sortedByValueMap.values.elementAt(0); i++) {
           tempTypeList.add(sortedByValueMap.keys.elementAt(0));
-
-
         }
         for (int i = 0; i < sortedByValueMap.values.elementAt(1); i++) {
           tempTypeList.add(sortedByValueMap.keys.elementAt(1));
@@ -236,12 +242,9 @@ late  List<String> answersList;
         for (int i = 0; i < sortedByValueMap.values.elementAt(2); i++) {
           tempTypeList.add(sortedByValueMap.keys.elementAt(2));
         }
-      }
-      else{
+      } else {
         for (int i = 0; i < sortedByValueMap.values.elementAt(0); i++) {
           tempTypeList.add(sortedByValueMap.keys.elementAt(0));
-
-
         }
         for (int i = 0; i < sortedByValueMap.values.elementAt(1); i++) {
           tempTypeList.add(sortedByValueMap.keys.elementAt(1));
@@ -250,44 +253,56 @@ late  List<String> answersList;
           tempTypeList.add(sortedByValueMap.keys.elementAt(2));
         }
 
-        for(int i =tempTypeList.length; i>20;i--){
+        for (int i = tempTypeList.length; i > 20; i--) {
           tempTypeList.removeAt(random.nextInt(20));
         }
-
       }
 
-
-        int m = 0;
-        int n = 0;
-        int o = 0;
-        for(int i = 0; i<tempTypeList.length;i++){
-          if(tempTypeList[i]=="MCQs"){
-
-            dataFinal.addEntries({"MCQs $i":{finalMcq.keys.elementAt(mcqOrder[m]):finalMcq.values.elementAt(mcqOrder[m])}            }.entries);
-              m++;
-          }else if(tempTypeList[i]=="True/False"){
-            dataFinal.addEntries({"True/False $i":{finalTF.keys.elementAt(tfOrder[n]):finalTF.values.elementAt(tfOrder[n])}}.entries);
-            n++;
-          } else if((tempTypeList[i]=="Fill up the blanks")){
-            dataFinal.addEntries({"Fill up the blanks $i":{finalFill.keys.elementAt(fillOrder[o]):finalFill.values.elementAt(fillOrder[o])}}.entries);
-            o++;
-          }
+      int m = 0;
+      int n = 0;
+      int o = 0;
+      for (int i = 0; i < tempTypeList.length; i++) {
+        if (tempTypeList[i] == "MCQs") {
+          dataFinal.addEntries({
+            "MCQs $i": {
+              finalMcq.keys.elementAt(mcqOrder[m]):
+                  finalMcq.values.elementAt(mcqOrder[m])
+            }
+          }.entries);
+          m++;
+        } else if (tempTypeList[i] == "True/False") {
+          dataFinal.addEntries({
+            "True/False $i": {
+              finalTF.keys.elementAt(tfOrder[n]):
+                  finalTF.values.elementAt(tfOrder[n])
+            }
+          }.entries);
+          n++;
+        } else if ((tempTypeList[i] == "Fill up the blanks")) {
+          dataFinal.addEntries({
+            "Fill up the blanks $i": {
+              finalFill.keys.elementAt(fillOrder[o]):
+                  finalFill.values.elementAt(fillOrder[o])
+            }
+          }.entries);
+          o++;
         }
-        type = dataFinal!.keys.toList()[0];
-        tempVAl = dataFinal!.values.toList()[0];
-        questionList.add(tempVAl.keys.toList()[0]) ;
-        question = questionList[0].toString();
+      }
+      type = dataFinal!.keys.toList()[0];
+      tempVAl = dataFinal!.values.toList()[0];
+      questionList.add(tempVAl.keys.toList()[0]);
+      question = questionList[0].toString();
 
-        optionsList = tempVAl.values.toList()[0];
-        answersList =  List.filled(dataFinal.length, "<-!->default<-!->", growable: true);
-        userAnwersList =  List.filled(dataFinal.length , "<-!->default<-!->", growable: true);
-        print("here");
-        setState(() {
-         ready = true;
-         timerMethod(timer = '1:00');
-
-       });
-
+      optionsList = tempVAl.values.toList()[0];
+      answersList =
+          List.filled(dataFinal.length, "<-!->default<-!->", growable: true);
+      userAnwersList =
+          List.filled(dataFinal.length, "<-!->default<-!->", growable: true);
+      print("here");
+      setState(() {
+        ready = true;
+        timerMethod(timer = '1:00');
+      });
     });
 
     // TODO: implement initState
@@ -397,34 +412,35 @@ late  List<String> answersList;
                                             "overAllScore/${widget.proUid}/${widget.subjectCode}/${widget.uid}")
                                         .get()
                                         .then((value) {
+                                      double iTemp = 0.0;
+                                      if (value.exists) {
+                                        Map temp1 = {};
+                                        temp1.addAll(value.value as Map);
 
-                                          double iTemp = 0.0;
-                                          if (value.exists) {
-                                            Map temp1 = {};
-                                            temp1.addAll(value.value as Map);
+                                        iTemp = double.parse(
+                                            temp1["Score"].toString());
+                                      }
+                                      double jTemp =
+                                          double.parse(scr.toString());
 
-                                            iTemp = double.parse(
-                                                temp1["Score"].toString());
-                                          }
-                                          double jTemp =
-                                              double.parse(scr.toString());
-
-                                          finalScore = iTemp + jTemp;
+                                      finalScore = iTemp + jTemp;
                                     }).then((_) {
                                       FirebaseDatabase.instance
                                           .ref(
                                               "overAllScore/${widget.proUid}/${widget.subjectCode}/${widget.uid}")
-                                          .set({"Score":finalScore,"Name":widget.name,"photoURL":widget.photoUrl });
+                                          .set({
+                                        "Score": finalScore,
+                                        "Name": widget.name,
+                                        "photoURL": widget.photoUrl
+                                      });
                                     }).then((_) {
                                       Future.delayed(const Duration(seconds: 3),
                                           () {
                                         FirebaseDatabase.instance
                                             .ref(
-                                            "individualScore/${widget.proUid}/${widget.subjectCode}/${widget.uid}")
+                                                "individualScore/${widget.proUid}/${widget.subjectCode}/${widget.uid}")
                                             .get()
                                             .then((value) {
-
-
                                           double iTemp = 0.0;
                                           if (value.exists) {
                                             Map temp1 = {};
@@ -442,40 +458,55 @@ late  List<String> answersList;
                                     }).then((_) {
                                       FirebaseDatabase.instance
                                           .ref(
-                                          "individualScore/${widget.proUid}/${widget.subjectCode}/${widget.uid}")
-                                          .set({"Score":finalScore,"Name":widget.name,"photoURL":widget.photoUrl });
+                                              "individualScore/${widget.proUid}/${widget.subjectCode}/${widget.uid}")
+                                          .set({
+                                        "Score": finalScore,
+                                        "Name": widget.name,
+                                        "photoURL": widget.photoUrl
+                                      });
                                     }).then(
                                       (_) {
                                         FirebaseFirestore.instance
                                             .collection('StudentsDetails')
-                                            .doc(widget.uid).get().then((valueStud) {
+                                            .doc(widget.uid)
+                                            .get()
+                                            .then((valueStud) {
                                           Map tempMap = valueStud.data() as Map;
-                                          if (tempMap["CompletedQuiz"] != null) {
-
-                                            Map tempMap1 = tempMap["CompletedQuiz"] as Map;
-                                            List tempList1 = List.empty(growable: true);
-                                            tempList1=tempMap1.values.elementAt(0).toList();
+                                          if (tempMap["CompletedQuiz"] !=
+                                              null) {
+                                            Map tempMap1 =
+                                                tempMap["CompletedQuiz"] as Map;
+                                            List tempList1 =
+                                                List.empty(growable: true);
+                                            tempList1 = tempMap1.values
+                                                .elementAt(0)
+                                                .toList();
                                             tempList1.add(widget.testCode);
 
                                             FirebaseFirestore.instance
                                                 .collection('StudentsDetails')
-                                                .doc(widget.uid).update(
-                                                {
-                                                  "CompletedQuiz."+widget.subjectCode: tempList1
-                                                });
-
+                                                .doc(widget.uid)
+                                                .update({
+                                              "CompletedQuiz." +
+                                                  widget.subjectCode: tempList1
+                                            });
                                           } else {
-
                                             FirebaseFirestore.instance
                                                 .collection('StudentsDetails')
-                                                .doc(widget.uid).update(
-                                                {"CompletedQuiz."+widget.subjectCode: [widget.testCode]
-                                                });
+                                                .doc(widget.uid)
+                                                .update({
+                                              "CompletedQuiz." +
+                                                  widget.subjectCode: [
+                                                widget.testCode
+                                              ]
+                                            });
                                           }
-                                        }).then((_){
-                                          Navigator.of(context).pushNamedAndRemoveUntil(
-                                            RoutesConstants.launchPadScreenRoute,
-                                                (Route<dynamic> route) => false,
+                                        }).then((_) {
+                                          Navigator.of(context)
+                                              .pushNamedAndRemoveUntil(
+                                            RoutesConstants
+                                                .launchPadScreenRoute,
+                                            (Route<dynamic> route) => false,
                                           );
                                         });
                                       },
@@ -502,21 +533,18 @@ late  List<String> answersList;
       },
     );
   }
+
   _images(url) {
-
-
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: SizedBox(
           width: MediaQuery.of(context).size.width * 70 / 100,
-          child: Image.network(url,
-              scale: 1)),
+          child: Image.network(url, scale: 1)),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       backgroundColor: const Color.fromRGBO(244, 244, 244, 1.0),
       resizeToAvoidBottomInset: true,
@@ -561,6 +589,8 @@ late  List<String> answersList;
                       Padding(
                         padding: const EdgeInsets.all(28.0),
                         child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.red),
                             onPressed: () {
                               onpressed();
                             },
@@ -620,13 +650,14 @@ late  List<String> answersList;
                           _value = selected ? index : null;
                           userAnwersList[count] = index.toString();
 
-                          answersList[count] = (optionsList[4].toInt()-1).toString();
+                          answersList[count] =
+                              (optionsList[4].toInt() - 1).toString();
                         });
                       },
                     ),
-                    (!optionsList[6+index].toString().contains("(If any)"))?_images(optionsList[6+index].toString())
-
-                    :SizedBox.shrink(),
+                    (!optionsList[6 + index].toString().contains("(If any)"))
+                        ? _images(optionsList[6 + index].toString())
+                        : SizedBox.shrink(),
                   ],
                 ),
               );
@@ -657,7 +688,8 @@ late  List<String> answersList;
                   setState(() {
                     _value = selected ? index : null;
                     userAnwersList[count] = index.toString();
-                    answersList[count] = (optionsList[0]-1.0).toInt().toString();
+                    answersList[count] =
+                        (optionsList[0] - 1.0).toInt().toString();
                   });
                 },
               ),
@@ -729,9 +761,9 @@ late  List<String> answersList;
                       maxLines: 1000,
                     )),
               ),
-              (!optionsList[5].toString().contains("(If any)"))?_images(optionsList[5].toString())
-
-                          :SizedBox.shrink(),
+              (!optionsList[5].toString().contains("(If any)"))
+                  ? _images(optionsList[5].toString())
+                  : SizedBox.shrink(),
             ],
           ),
         ),
@@ -755,155 +787,163 @@ late  List<String> answersList;
   }
 
   onpressed() {
-      setState(() {
-        count++;
-        _timer.cancel();
+    setState(() {
+      count++;
+      _timer.cancel();
 
-        if (count < dataFinal.length) {
-          timerMethod(timer = '1:00');
+      if (count < dataFinal.length) {
+        timerMethod(timer = '1:00');
 
-          type = dataFinal!.keys.toList()[count];
-          textarea.text = "";
-          testareafocus.unfocus();
-          tempVAl = dataFinal!.values.toList()[count];
-          questionList.add(tempVAl.keys.toList()[0])  ;
-          question = questionList.last.toString();
-          optionsList = tempVAl.values.toList()[0];
-          _value = null;
-        } else {
-          double finalScore = 0;
-          showDialog(
-              barrierDismissible: false,
-              context: context,
-              builder: (BuildContext context) {
-                return AlertDialog(
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30)),
-                    title: const Icon(
-                      Icons.check_circle,
-                      color: Colors.green,
-                      size: 60,
-                    ),
-                    content: Text(
-                      "Thank you for taking the Quiz.",
-                      maxLines: 2,
-                      textAlign: TextAlign.center,
-                    ),
-                    actions: <Widget>[
-                      TextButton(
-                          child: Text(
-                            'Okay',
-                            style: Theme.of(context)
-                                .textTheme
-                                .titleLarge
-                                ?.copyWith(color: Colors.blue),
-                          ),
-                          onPressed: () {
-                            int correctCount = 0;
-                            int attemptCount = 0;
-                            for (int i = 0; i < answersList.length; i++) {
-                              if (answersList[i] != "<-!->default<-!->") {
-                                attemptCount++;
-                                if (answersList[i].toString() == userAnwersList[i].trim().toString()) {
-                                  correctCount++;
-                                }
+        type = dataFinal!.keys.toList()[count];
+        textarea.text = "";
+        testareafocus.unfocus();
+        tempVAl = dataFinal!.values.toList()[count];
+        questionList.add(tempVAl.keys.toList()[0]);
+        question = questionList.last.toString();
+        optionsList = tempVAl.values.toList()[0];
+        _value = null;
+      } else {
+        double finalScore = 0;
+        showDialog(
+            barrierDismissible: false,
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30)),
+                  title: const Icon(
+                    Icons.check_circle,
+                    color: Colors.green,
+                    size: 60,
+                  ),
+                  content: Text(
+                    "Thank you for taking the Quiz.",
+                    maxLines: 2,
+                    textAlign: TextAlign.center,
+                  ),
+                  actions: <Widget>[
+                    TextButton(
+                        child: Text(
+                          'Okay',
+                          style: Theme.of(context)
+                              .textTheme
+                              .titleLarge
+                              ?.copyWith(color: Colors.blue),
+                        ),
+                        onPressed: () {
+                          int correctCount = 0;
+                          int attemptCount = 0;
+                          for (int i = 0; i < answersList.length; i++) {
+                            if (answersList[i] != "<-!->default<-!->") {
+                              attemptCount++;
+                              if (answersList[i].toString() ==
+                                  userAnwersList[i].trim().toString()) {
+                                correctCount++;
                               }
                             }
-                            var acc = (correctCount / attemptCount * 100)
-                                .toStringAsFixed(2);
-                            var scr =
-                                (correctCount / 10 * 100).toStringAsFixed(2);
+                          }
+                          var acc = (correctCount / attemptCount * 100)
+                              .toStringAsFixed(2);
+                          var scr =
+                              (correctCount / 10 * 100).toStringAsFixed(2);
 
+                          FirebaseDatabase.instance
+                              .ref(
+                                  "overAllScore/${widget.proUid}/${widget.subjectCode}/${widget.uid}")
+                              .get()
+                              .then((value) {
+                            double iTemp = 0.0;
+                            if (value.exists) {
+                              Map temp1 = {};
+                              temp1.addAll(value.value as Map);
+                              iTemp = double.parse(temp1["Score"].toString());
+                            }
+                            double jTemp = double.parse(scr.toString());
+                            finalScore = iTemp + jTemp;
+                          }).then((_) {
+                            FirebaseDatabase.instance
+                                .ref(
+                                    "overAllScore/${widget.proUid}/${widget.subjectCode}/${widget.uid}")
+                                .set({
+                              "Score": finalScore,
+                              "Name": widget.name,
+                              "photoURL": widget.photoUrl
+                            });
+                          }).then((_) {
+                            Future.delayed(const Duration(seconds: 3), () {
                               FirebaseDatabase.instance
                                   .ref(
-                                      "overAllScore/${widget.proUid}/${widget.subjectCode}/${widget.uid}")
+                                      "individualScore/${widget.proUid}/${widget.subjectCode}/${widget.uid}")
                                   .get()
                                   .then((value) {
                                 double iTemp = 0.0;
                                 if (value.exists) {
                                   Map temp1 = {};
                                   temp1.addAll(value.value as Map);
-                                  iTemp = double.parse(temp1["Score"].toString());
+
+                                  iTemp =
+                                      double.parse(temp1["Score"].toString());
                                 }
                                 double jTemp = double.parse(scr.toString());
                                 finalScore = iTemp + jTemp;
-                              }).then((_) {
-                                FirebaseDatabase.instance
-                                    .ref(
-                                        "overAllScore/${widget.proUid}/${widget.subjectCode}/${widget.uid}")
-                                    .set({"Score":finalScore,"Name":widget.name,"photoURL":widget.photoUrl });
-                              }).then((_) {
-                                Future.delayed(const Duration(seconds: 3), () {
-                                  FirebaseDatabase.instance
-                                      .ref(
-                                          "individualScore/${widget.proUid}/${widget.subjectCode}/${widget.uid}")
-                                      .get()
-                                      .then((value) {
-                                    double iTemp = 0.0;
-                                    if (value.exists) {
-                                      Map temp1 = {};
-                                      temp1.addAll(value.value as Map);
-
-                                      iTemp =
-                                          double.parse(temp1["Score"].toString());
-                                    }
-                                    double jTemp = double.parse(scr.toString());
-                                    finalScore = iTemp + jTemp;
-                                  });
-                                });
-                              }).then((_) {
-
-                                FirebaseDatabase.instance
-                                    .ref(
+                              });
+                            });
+                          }).then((_) {
+                            FirebaseDatabase.instance
+                                .ref(
                                     "individualScore/${widget.proUid}/${widget.subjectCode}/${widget.uid}")
-                                    .set({"Score":finalScore,"Name":widget.name,"photoURL":widget.photoUrl });
-                              }).then(
-                                (_) {
+                                .set({
+                              "Score": finalScore,
+                              "Name": widget.name,
+                              "photoURL": widget.photoUrl
+                            });
+                          }).then(
+                            (_) {
+                              FirebaseFirestore.instance
+                                  .collection('StudentsDetails')
+                                  .doc(widget.uid)
+                                  .get()
+                                  .then((valueStud) {
+                                print(valueStud.data());
+                                Map tempMap = valueStud.data() as Map;
+                                if (tempMap["CompletedQuiz"] != null) {
+                                  Map tempMap1 =
+                                      tempMap["CompletedQuiz"] as Map;
+                                  List tempList1 = List.empty(growable: true);
+                                  tempList1 =
+                                      tempMap1[widget.subjectCode].toList();
+                                  tempList1.add(widget.testCode);
+
                                   FirebaseFirestore.instance
                                       .collection('StudentsDetails')
-                                      .doc(widget.uid).get().then((valueStud) {
-                                    print(valueStud.data());
-                                    Map tempMap = valueStud.data() as Map;
-                                    if (tempMap["CompletedQuiz"] != null) {
-
-                                      Map tempMap1 = tempMap["CompletedQuiz"] as Map;
-                                      List tempList1 = List.empty(growable: true);
-                                      tempList1=tempMap1[widget.subjectCode].toList();
-                                      tempList1.add(widget.testCode);
-
-                                      FirebaseFirestore.instance
-                                          .collection('StudentsDetails')
-                                          .doc(widget.uid).update(
-                                          {
-                                            "CompletedQuiz."+widget.subjectCode: tempList1
-                                          });
-
-                                    }
-                                    else {
-
-                                      FirebaseFirestore.instance
-                                          .collection('StudentsDetails')
-                                          .doc(widget.uid).update(
-                                          {"CompletedQuiz.${widget.subjectCode}": [widget.testCode]
-                                          });
-                           }
-                                  }).then((_){
-                                    Navigator.of(context).pushNamedAndRemoveUntil(
-                                      RoutesConstants.launchPadScreenRoute,
-                                          (Route<dynamic> route) => false,
-                                    );
+                                      .doc(widget.uid)
+                                      .update({
+                                    "CompletedQuiz." + widget.subjectCode:
+                                        tempList1
                                   });
-
-
-                                },
-                              );
-
-                          }),
-                    ]);
-              });
-        }
-      });
-
+                                } else {
+                                  FirebaseFirestore.instance
+                                      .collection('StudentsDetails')
+                                      .doc(widget.uid)
+                                      .update({
+                                    "CompletedQuiz.${widget.subjectCode}": [
+                                      widget.testCode
+                                    ]
+                                  });
+                                }
+                              }).then((_) {
+                                Navigator.of(context).pushNamedAndRemoveUntil(
+                                  RoutesConstants.launchPadScreenRoute,
+                                  (Route<dynamic> route) => false,
+                                );
+                              });
+                            },
+                          );
+                        }),
+                  ]);
+            });
+      }
+    });
   }
 
   readExcel() async {
@@ -915,7 +955,7 @@ late  List<String> answersList;
     //   question = questionList[0];
     //   optionsList = tempVAl.values.toList()[0];
     final String firebaseExcelLink = widget.url;
-  print("read");
+    print("read");
     final response = await http.get(Uri.parse(firebaseExcelLink));
     List rowdetail0 = [];
     List rowdetail1 = [];
@@ -923,9 +963,9 @@ late  List<String> answersList;
 
     if (response.statusCode == 200) {
       // Parse the Excel file
-      final Uint8List bytes = response.bodyBytes ;
+      final Uint8List bytes = response.bodyBytes;
       final excel = Excel.decodeBytes(bytes).tables;
-      for (var table in excel.keys ) {
+      for (var table in excel.keys) {
         for (var row in excel[table]!.rows) {
           rowdetail0.add(row[0]?.value);
           rowdetail1.add(row[1]?.value);
@@ -942,7 +982,7 @@ late  List<String> answersList;
       data.addEntries({i: rowdetail2[j]}.entries);
       j++;
     }
-print("read");
+    print("read");
     return data;
   }
 }

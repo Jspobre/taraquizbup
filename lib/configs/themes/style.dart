@@ -6,8 +6,9 @@ class Style {
   ThemeData customTheme(BuildContext context) {
     return ThemeData(
       bottomAppBarTheme: const BottomAppBarTheme(color: Colors.black54),
-        colorSchemeSeed: const Color(0xff6750a4), useMaterial3: true,
-    appBarTheme: const AppBarTheme(
+      colorSchemeSeed: const Color(0xff6750a4),
+      useMaterial3: true,
+      appBarTheme: const AppBarTheme(
           centerTitle: true,
           elevation: 7.3,
           backgroundColor: Colors.black87,
@@ -22,20 +23,21 @@ class Style {
       scaffoldBackgroundColor: const Color.fromRGBO(240, 240, 240, 1.0),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ButtonStyle(
-          foregroundColor: MaterialStateProperty.resolveWith<Color>((Set<MaterialState> states) {
-            return Colors.white70;
-          },),
+          foregroundColor: MaterialStateProperty.resolveWith<Color>(
+            (Set<MaterialState> states) {
+              return Colors.white;
+            },
+          ),
           textStyle: MaterialStateProperty.resolveWith<TextStyle>(
             (Set<MaterialState> states) {
               return const TextStyle(
-                  color: Colors.white70,
+                  color: Colors.white,
                   fontFamily: 'OpenSans',
                   fontWeight: FontWeight.w700,
                   overflow: TextOverflow.ellipsis,
                   letterSpacing: 1.4);
             },
           ),
-
           fixedSize: MaterialStateProperty.resolveWith<Size>(
             (Set<MaterialState> states) {
               return const Size(220, 50);
@@ -61,11 +63,14 @@ class Style {
           ),
         ),
       ),
-      listTileTheme: ListTileThemeData(titleTextStyle: TextStyle(            overflow: TextOverflow.ellipsis,
-          color: Colors.redAccent,
-          fontFamily: 'SFPro',
-          fontSize: 18,
-          fontWeight: FontWeight.w700),),
+      listTileTheme: ListTileThemeData(
+        titleTextStyle: TextStyle(
+            overflow: TextOverflow.ellipsis,
+            color: Colors.redAccent,
+            fontFamily: 'SFPro',
+            fontSize: 18,
+            fontWeight: FontWeight.w700),
+      ),
       dividerTheme: const DividerThemeData(color: Colors.transparent),
       textTheme: const TextTheme(
         displayLarge: TextStyle(
@@ -144,7 +149,6 @@ class Style {
             fontFamily: 'DejaVuSans',
             fontWeight: FontWeight.w700),
       ),
-
     );
   }
 }

@@ -1,4 +1,3 @@
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -33,238 +32,244 @@ class SignIn extends StatelessWidget {
     hiveDBAdd(SignInModel sign) async {
       FirebaseFirestore.instance
           .collection('StudentsDetails')
-          .doc(sign.uid).get().then((value) async {
-           if (value.exists) {
-
-             viewPass = true;
-
-           }
-           var box = await Hive.openBox('taraQuizAppData');
-           box.putAll({
-
-             'dName': sign.dName,
-             'uid': sign.uid,
-             'eMail': sign.eMailId,
-             'mobile': sign.mobileNumber,
-             'rToken': sign.rToken,
-             'eMailIdVerified': sign.eMailIdVerified,
-             'isSignedIn': sign.isSignedIn,
-             'signedInMethod': sign.signInMethod,
-             'photoURL': sign.profilePhotoURL,
-
-           }).then((_) {
-             viewPass  ?  customDialog.customSuccessDialog("Success", context, true,  false) : customDialog.customSuccessDialog("Success", context, false,  true);});
+          .doc(sign.uid)
+          .get()
+          .then((value) async {
+        if (value.exists) {
+          viewPass = true;
+        }
+        var box = await Hive.openBox('taraQuizAppData');
+        box.putAll({
+          'dName': sign.dName,
+          'uid': sign.uid,
+          'eMail': sign.eMailId,
+          'mobile': sign.mobileNumber,
+          'rToken': sign.rToken,
+          'eMailIdVerified': sign.eMailIdVerified,
+          'isSignedIn': sign.isSignedIn,
+          'signedInMethod': sign.signInMethod,
+          'photoURL': sign.profilePhotoURL,
+        }).then((_) {
+          viewPass
+              ? customDialog.customSuccessDialog(
+                  "Success", context, true, false)
+              : customDialog.customSuccessDialog(
+                  "Success", context, false, true);
+        });
       });
-
-
     }
 
     String otp = '';
 
     onPressedSignIn() async {
-
       await Connectivity().checkConnectivity().then((value) {
         if (value == ConnectivityResult.mobile ||
             value == ConnectivityResult.wifi) {
-
-if(RegExp(r"^(\+91)(\d{10})$")
-    .hasMatch(controllerUserCred.text)|| RegExp(r"^(09|\+639)\d{9}$")
-    .hasMatch(controllerUserCred.text)) {
-  FirebaseAuth.instance.verifyPhoneNumber(
-    phoneNumber: controllerUserCred.text,
-    timeout: const Duration(seconds: 5),
-    verificationCompleted: (credential) async {
-
-      await FirebaseAuth.instance.signInWithCredential(credential).then((value) {
-        signInModel.dName =
-            value.user!.displayName ?? AppConstants.defaultStringConstant;
-        signInModel.eMailId =
-            value.user!.email ?? AppConstants.defaultStringConstant;
-        signInModel.eMailIdVerified = value.user!.emailVerified;
-        signInModel.uid = value.user!.uid;
-        signInModel.rToken = value.user!.refreshToken ??
-            AppConstants.defaultStringConstant;
-        signInModel.isSignedIn = true;
-        signInModel.profilePhotoURL = value.user!.photoURL ??
-            AppConstants.defaultStringConstant;
-
-
-
-      }).whenComplete(() {
+          if (RegExp(r"^(\+91)(\d{10})$").hasMatch(controllerUserCred.text) ||
+              RegExp(r"^(09|\+639)\d{9}$").hasMatch(controllerUserCred.text)) {
+            FirebaseAuth.instance.verifyPhoneNumber(
+              phoneNumber: controllerUserCred.text,
+              timeout: const Duration(seconds: 5),
+              verificationCompleted: (credential) async {
+                await FirebaseAuth.instance
+                    .signInWithCredential(credential)
+                    .then((value) {
+                  signInModel.dName = value.user!.displayName ??
+                      AppConstants.defaultStringConstant;
+                  signInModel.eMailId =
+                      value.user!.email ?? AppConstants.defaultStringConstant;
+                  signInModel.eMailIdVerified = value.user!.emailVerified;
+                  signInModel.uid = value.user!.uid;
+                  signInModel.rToken = value.user!.refreshToken ??
+                      AppConstants.defaultStringConstant;
+                  signInModel.isSignedIn = true;
+                  signInModel.profilePhotoURL = value.user!.photoURL ??
+                      AppConstants.defaultStringConstant;
+                }).whenComplete(() {
                   Navigator.of(context, rootNavigator: true).pop();
                   hiveDBAdd(
                     signInModel,
                   );
                 });
-    },
+              },
+              verificationFailed: (_) {},
+              codeSent: (verificationId, [forceResendingToken]) {
+                showDialog(
+                    barrierDismissible: false,
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(30)),
+                          title: const Text(
+                            "OTP",
+                            textAlign: TextAlign.center,
+                          ),
+                          content: Padding(
+                            padding: EdgeInsets.only(
+                              left: ((MediaQuery.of(context).size.width * 8) /
+                                  100),
+                              right: ((MediaQuery.of(context).size.width * 8) /
+                                  100),
+                              bottom:
+                                  ((MediaQuery.of(context).size.height * 2) /
+                                      100),
+                            ),
+                            child: StatefulBuilder(
+                              builder: (context, setState) {
+                                return TextField(
+                                  autofocus: false,
+                                  showCursor: true,
+                                  autocorrect: false,
+                                  focusNode: focusNodeOTP,
+                                  textInputAction: TextInputAction.next,
+                                  keyboardType: TextInputType.text,
+                                  controller: controllerOTP,
+                                  decoration: const InputDecoration(
+                                    border: UnderlineInputBorder(),
+                                    labelText: 'Enter OTP: \*',
+                                  ),
+                                  obscureText: true,
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodyMedium
+                                      ?.copyWith(color: Colors.blue),
+                                  onChanged: (e) {
+                                    setState(() {
+                                      otp = e;
+                                    });
+                                  },
+                                  onTap: () {
+                                    focusNodeEMail.unfocus();
+                                    focusNodePassword.unfocus();
+                                    FocusScope.of(context)
+                                        .requestFocus(focusNodeOTP);
+                                    controllerOTP.text = '';
+                                    signInModel.otp = '';
+                                  },
+                                );
+                              },
+                            ),
+                          ),
+                          actions: <Widget>[
+                            TextButton(
+                                child: Text(
+                                  'Submit',
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .titleLarge
+                                      ?.copyWith(color: Colors.blue),
+                                ),
+                                onPressed: () async {
+                                  final PhoneAuthCredential credential =
+                                      PhoneAuthProvider.credential(
+                                    verificationId: verificationId,
+                                    smsCode: otp,
+                                  );
+                                  await FirebaseAuth.instance
+                                      .signInWithCredential(credential)
+                                      .then((value) {
+                                    signInModel.dName =
+                                        value.user!.displayName ??
+                                            AppConstants.defaultStringConstant;
+                                    signInModel.eMailId = value.user!.email ??
+                                        AppConstants.defaultStringConstant;
+                                    signInModel.eMailIdVerified =
+                                        value.user!.emailVerified;
+                                    signInModel.uid = value.user!.uid;
+                                    signInModel.mobileNumber =
+                                        value.user!.phoneNumber ??
+                                            AppConstants.defaultStringConstant;
+                                    signInModel.rToken =
+                                        value.user!.refreshToken ??
+                                            AppConstants.defaultStringConstant;
+                                    signInModel.isSignedIn = true;
+                                    signInModel.profilePhotoURL =
+                                        value.user!.photoURL ??
+                                            AppConstants.defaultStringConstant;
+                                    Navigator.of(context, rootNavigator: true)
+                                        .pop();
+                                    hiveDBAdd(
+                                      signInModel,
+                                    );
+                                  }).onError((error, stackTrace) {
+                                    customDialog.customErrorDialog(
+                                      'An error has occurred please try again later. internal code 01',
+                                      context,
+                                    );
+                                  });
+                                }),
+                          ]);
+                    });
 
-    verificationFailed: (_) {},
-    codeSent: (verificationId, [forceResendingToken])  {
+                // get the SMS code from the user somehow (probably using a text field)
+              },
+              codeAutoRetrievalTimeout: (String verificationId) {},
+            );
+          } else {
+            try {
+              FirebaseAuth.instance
+                  .signInWithEmailAndPassword(
+                      email: signInModel.eMailId,
+                      password: signInModel.password)
+                  .then((value) async {
+                signInModel.dName = value.user!.displayName ??
+                    AppConstants.defaultStringConstant;
+                signInModel.eMailId =
+                    value.user!.email ?? AppConstants.defaultStringConstant;
+                signInModel.mobileNumber = value.user!.phoneNumber ??
+                    AppConstants.defaultStringConstant;
+                signInModel.eMailIdVerified = value.user!.emailVerified;
+                signInModel.uid = value.user!.uid;
+                signInModel.rToken = value.user!.refreshToken ??
+                    AppConstants.defaultStringConstant;
+                signInModel.isSignedIn = true;
+                print(value.user!.photoURL);
+                signInModel.profilePhotoURL =
+                    value.user!.photoURL ?? AppConstants.defaultStringConstant;
 
-      showDialog(
-          barrierDismissible: false,
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30)),
-                title: const Text(
-                  "OTP",
-                  textAlign: TextAlign.center,
-                ),
-                content: Padding(
-                  padding: EdgeInsets.only(
-                    left:
-                    ((MediaQuery.of(context).size.width * 8) / 100),
-                    right:
-                    ((MediaQuery.of(context).size.width * 8) / 100),
-                    bottom: ((MediaQuery.of(context).size.height * 2) /
-                        100),
-                  ),
-                  child: StatefulBuilder(
-                    builder: (context, setState) {
-                      return TextField(
-                        autofocus: false,
-                        showCursor: true,
-                        autocorrect: false,
-                        focusNode: focusNodeOTP,
-                        textInputAction: TextInputAction.next,
-                        keyboardType: TextInputType.text,
-                        controller: controllerOTP,
-                        decoration: const InputDecoration(
-                          border: UnderlineInputBorder(),
-                          labelText: 'Enter OTP: \*',
-                        ),
-                        obscureText: true,
-                        style: Theme.of(context)
-                            .textTheme
-                            .bodyMedium
-                            ?.copyWith(color: Colors.blue),
-                        onChanged: (e) {
-                          setState(() {
-                            otp = e;
-                          });
-                        },
-                        onTap: () {
-                          focusNodeEMail.unfocus();
-                          focusNodePassword.unfocus();
-                          FocusScope.of(context)
-                              .requestFocus(focusNodeOTP);
-                          controllerOTP.text = '';
-                          signInModel.otp = '';
-                        },
-                      );
-                    },
-                  ),
-                ),
-                actions: <Widget>[
-                  TextButton(
-                      child: Text(
-                        'Submit',
-                        style: Theme.of(context)
-                            .textTheme
-                            .titleLarge
-                            ?.copyWith(color: Colors.blue),
-                      ),
-                      onPressed: () async {
-
-final PhoneAuthCredential credential =
-                        PhoneAuthProvider.credential(
-                          verificationId: verificationId,
-                          smsCode: otp,
-                        );
-                        await FirebaseAuth.instance.signInWithCredential(credential).then((value) {
-                          signInModel.dName =
-                              value.user!.displayName ?? AppConstants.defaultStringConstant;
-                          signInModel.eMailId =
-                              value.user!.email ?? AppConstants.defaultStringConstant;
-                          signInModel.eMailIdVerified = value.user!.emailVerified;
-                          signInModel.uid = value.user!.uid;
-                          signInModel.mobileNumber = value.user!.phoneNumber ?? AppConstants.defaultStringConstant;
-                          signInModel.rToken = value.user!.refreshToken ??
-                              AppConstants.defaultStringConstant;
-                          signInModel.isSignedIn = true;
-                          signInModel.profilePhotoURL = value.user!.photoURL ??
-                              AppConstants.defaultStringConstant;
-                          Navigator.of(context, rootNavigator: true).pop();
-                          hiveDBAdd(signInModel,);
-                          }).onError((error, stackTrace) { customDialog.customErrorDialog(
-                          'An error has occurred please try again later. internal code 01',
-                          context,
-                        );});
-
-                      }),
-                ]);
-          });
-
-      // get the SMS code from the user somehow (probably using a text field)
-    },
-    codeAutoRetrievalTimeout: (String verificationId) {},
-  );
-
-}else {
-
-  try {
-    FirebaseAuth.instance
-        .signInWithEmailAndPassword(
-        email: signInModel.eMailId, password: signInModel.password)
-        .then((value) async {
-
-      signInModel.dName =
-          value.user!.displayName ?? AppConstants.defaultStringConstant;
-      signInModel.eMailId =
-          value.user!.email ?? AppConstants.defaultStringConstant;
-      signInModel.mobileNumber =
-          value.user!.phoneNumber ?? AppConstants.defaultStringConstant;
-      signInModel.eMailIdVerified = value.user!.emailVerified;
-      signInModel.uid = value.user!.uid;
-      signInModel.rToken = value.user!.refreshToken ??
-          AppConstants.defaultStringConstant;
-      signInModel.isSignedIn = true;
-      print(value.user!.photoURL);
-      signInModel.profilePhotoURL = value.user!.photoURL ??
-          AppConstants.defaultStringConstant;
-
-      hiveDBAdd(signInModel,);
-
-
-    }).onError((error, stackTrace) {
-      print(error);
-      if (error.toString() == '[firebase_auth/user-not-found] There is no user record corresponding to this identifier. The user may have been deleted.') {
-        customDialog.customErrorDialog(
-          'There is no user record corresponding to this identifier. The user may have been deleted.',
-          context,
-        );
-      } else if (error.toString() == '[firebase_auth/invalid-email] wrong-password') {
-        customDialog.customErrorDialog(
-          'Wrong password provided for that user.',
-          context,
-        );
-      } else if (error.toString() == '[firebase_auth/invalid-email] The email address is badly formatted.') {
-        customDialog.customErrorDialog(
-          'The email address is badly formatted.',
-          context,
-        );
-      }  else {
-        customDialog.customErrorDialog(
-          'An error has occurred please try again later. internal code 01',
-          context,
-        );
-      }
-    }).onError((error, stackTrace) {
-      customDialog.customErrorDialog(
-        error.toString(),
-        context,
-      );
-    });
-
-  } catch (e) {
-    customDialog.customErrorDialog(
-      'An error has occurred please try again later. internal code 02',
-      context,
-    );
-  }
-}
+                hiveDBAdd(
+                  signInModel,
+                );
+              }).onError((error, stackTrace) {
+                print(error);
+                if (error.toString() ==
+                    '[firebase_auth/user-not-found] There is no user record corresponding to this identifier. The user may have been deleted.') {
+                  customDialog.customErrorDialog(
+                    'There is no user record corresponding to this identifier. The user may have been deleted.',
+                    context,
+                  );
+                } else if (error.toString() ==
+                    '[firebase_auth/invalid-email] wrong-password') {
+                  customDialog.customErrorDialog(
+                    'Wrong password provided for that user.',
+                    context,
+                  );
+                } else if (error.toString() ==
+                    '[firebase_auth/invalid-email] The email address is badly formatted.') {
+                  customDialog.customErrorDialog(
+                    'The email address is badly formatted.',
+                    context,
+                  );
+                } else {
+                  customDialog.customErrorDialog(
+                    'An error has occurred please try again later. internal code 01',
+                    context,
+                  );
+                }
+              }).onError((error, stackTrace) {
+                customDialog.customErrorDialog(
+                  error.toString(),
+                  context,
+                );
+              });
+            } catch (e) {
+              customDialog.customErrorDialog(
+                'An error has occurred please try again later. internal code 02',
+                context,
+              );
+            }
+          }
         } else {
           customDialog.customErrorDialog(
             'Please check your internet connectivity.',
@@ -277,7 +282,9 @@ final PhoneAuthCredential credential =
     onPressedRegister() {
       Navigator.of(context).push(
         MaterialPageRoute(
-            builder: (context) => Register(isChangePassword:  false,),
+            builder: (context) => Register(
+                  isChangePassword: false,
+                ),
             maintainState: true,
             fullscreenDialog: false),
       );
@@ -289,12 +296,18 @@ final PhoneAuthCredential credential =
             builder: (context) => ResetPassword(), fullscreenDialog: false),
       );
     }
-    onPressedChangePassword(){
+
+    onPressedChangePassword() {
       Navigator.of(context).push(
         MaterialPageRoute(
-            builder: (context) => Register( isChangePassword: true,),   maintainState: true, fullscreenDialog: false),
+            builder: (context) => Register(
+                  isChangePassword: true,
+                ),
+            maintainState: true,
+            fullscreenDialog: false),
       );
     }
+
     Future<void> launchInWebView(Uri url) async {
       if (!await launchUrl(
         url,
@@ -348,7 +361,6 @@ final PhoneAuthCredential credential =
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
-
                   Padding(
                     padding: EdgeInsets.only(
                       top: ((MediaQuery.of(context).size.height * 4) / 100),
@@ -367,18 +379,21 @@ final PhoneAuthCredential credential =
                     width: 350,
                     height: 175,
                     child: Padding(
-                      padding: EdgeInsets.only(left: MediaQuery.of(context).size.width * 10 / 100,right: MediaQuery.of(context).size.width * 10 / 100),
-                      child: Image( image: AssetImage(FileConstants.logo),),
+                      padding: EdgeInsets.only(
+                          left: MediaQuery.of(context).size.width * 10 / 100,
+                          right: MediaQuery.of(context).size.width * 10 / 100),
+                      child: Image(
+                        image: AssetImage(FileConstants.logo),
+                      ),
                     ),
                   ),
-
                   Padding(
                     padding: EdgeInsets.only(
                         left: ((MediaQuery.of(context).size.width * 8) / 100),
                         right: ((MediaQuery.of(context).size.width * 8) / 100),
                         bottom:
-                            ((MediaQuery.of(context).size.height * 4) / 100),top:
-                    ((MediaQuery.of(context).size.height * 4) / 100)),
+                            ((MediaQuery.of(context).size.height * 4) / 100),
+                        top: ((MediaQuery.of(context).size.height * 4) / 100)),
                     child: TextField(
                       controller: controllerUserCred,
                       focusNode: focusNodeEMail,
@@ -469,36 +484,45 @@ final PhoneAuthCredential credential =
                     children: [
                       TextButton(
                           onPressed: onPressedResetPassword,
-                          child: Text('Forgot Password?',  style: Theme.of(context)
-                              .textTheme
-                              .bodyMedium
-                              ?.copyWith(color: Colors.blue),)),
-
+                          child: Text(
+                            'Forgot Password?',
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(color: Colors.blue),
+                          )),
                       TextButton(
                           onPressed: onPressedRegister,
-                          child:  Text('Register', style: Theme.of(context)
-        .textTheme
-        .bodyMedium
-        ?.copyWith(color: Colors.blue),)),
+                          child: Text(
+                            'Register',
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(color: Colors.blue),
+                          )),
                       TextButton(
                           onPressed: onPressedChangePassword,
-                          child: Text('Change Password?',  style: Theme.of(context)
-                              .textTheme
-                              .bodyMedium
-                              ?.copyWith(color: Colors.blue),)),
+                          child: Text(
+                            'Change Password?',
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(color: Colors.blue),
+                          )),
                     ],
                   ),
                   Padding(
                     padding: EdgeInsets.only(
-                      top: ((MediaQuery.of(context).size.height * 4) / 100 ),
-                      bottom: ((MediaQuery.of(context).size.height * 4) / 100 ),
+                      top: ((MediaQuery.of(context).size.height * 4) / 100),
+                      bottom: ((MediaQuery.of(context).size.height * 4) / 100),
                     ),
                     child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.blue),
                       onPressed: onPressedSignIn,
                       child: const Text('Sign In'),
                     ),
                   ),
-
                   Row(
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.center,
