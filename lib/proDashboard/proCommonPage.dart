@@ -1468,10 +1468,10 @@ class _ProCommonPageState extends State<ProCommonPage> {
         Map<String, dynamic> studentCompletedQuiz =
             studentData['CompletedQuiz'];
 
-        studentSubject.remove(widget.subTitle);
+        studentSubject.remove(widget.subjectCode);
 
-        if (studentCompletedQuiz[widget.subTitle] != null) {
-          studentCompletedQuiz.remove(widget.subTitle);
+        if (studentCompletedQuiz[widget.subjectCode] != null) {
+          studentCompletedQuiz.remove(widget.subjectCode);
         }
 
         var studentRef = FirebaseFirestore.instance
@@ -1494,7 +1494,7 @@ class _ProCommonPageState extends State<ProCommonPage> {
           var profData = profQuery.data() as Map<String, dynamic>;
 
           Map<String, dynamic> profSubject =
-              profData['Subject'][widget.subTitle]['StudentList'];
+              profData['Subject'][widget.subjectCode]['StudentList'];
 
           profSubject.remove(studentDocId);
 
@@ -1503,7 +1503,7 @@ class _ProCommonPageState extends State<ProCommonPage> {
               .doc(widget.uid);
 
           profRef.update({
-            'Subject.${widget.subTitle}.StudentList': profSubject,
+            'Subject.${widget.subjectCode}.StudentList': profSubject,
           }).whenComplete(() => print("removed student in subject"));
         }
 
