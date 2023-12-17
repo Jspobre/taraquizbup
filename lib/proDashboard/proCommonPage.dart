@@ -85,8 +85,40 @@ class _ProCommonPageState extends State<ProCommonPage> {
 
   CustomDialog customDialog = CustomDialog();
 
+  //? for scores list toget ===========
+  String scoresMode = 'Individual';
+
+  // ? ================================
+
   @override
   Widget build(BuildContext context) {
+    // ? FOR SCORES LIST DATA===============================
+    List<Map<String, dynamic>> newFinalIndividualList =
+        List.from(widget.finalIndividualList);
+
+    newFinalIndividualList.forEach((individual) {
+      String fullName = individual['Name'] as String;
+      List<String> nameParts = fullName.split(' ');
+
+      // Ensure there are at least two parts (first name and last name)
+      if (nameParts.length >= 2) {
+        String lastName = nameParts[1]; // Last name
+        String firstName = nameParts[0]; // First name
+
+        // Modify 'name' property to be in 'Last Name, First Name' format
+        individual['Name'] = '$lastName, $firstName';
+      }
+    });
+
+    newFinalIndividualList.sort((a, b) {
+      final String nameA = (a['Name'] as String).toLowerCase();
+      final String nameB = (b['Name'] as String).toLowerCase();
+      return nameA.compareTo(nameB);
+    });
+
+    print(widget.subjectCode);
+    // ? ==================================================
+
     Widget _body(String title) {
       return (title == "Support")
           ?
@@ -678,6 +710,7 @@ class _ProCommonPageState extends State<ProCommonPage> {
                               padding: const EdgeInsets.all(12.0),
                               child: ListView.builder(
                                 itemBuilder: (BuildContext context, int index) {
+                                  // TODO ADD UNENroLL STUDENTS
                                   return Card(
                                     child: Padding(
                                       padding: EdgeInsets.only(
@@ -708,13 +741,30 @@ class _ProCommonPageState extends State<ProCommonPage> {
                                                   .elementAt(index)),
                                             ),
                                           ),
-                                          Text(
-                                            widget
-                                                .finalStudentListForProfs.values
-                                                .elementAt(index)
-                                                .toString(),
-                                            maxLines: 2,
-                                          )
+                                          Expanded(
+                                            child: Text(
+                                              widget.finalStudentListForProfs
+                                                  .values
+                                                  .elementAt(index)
+                                                  .toString(),
+                                              maxLines: 2,
+                                            ),
+                                          ),
+                                          IconButton(
+                                              onPressed: () {
+                                                handleDelete(index);
+                                                String key = widget
+                                                    .finalStudentListForProfs
+                                                    .keys
+                                                    .elementAt(index);
+
+                                                setState(() {
+                                                  widget
+                                                      .finalStudentListForProfs
+                                                      .remove(key);
+                                                });
+                                              },
+                                              icon: Icon(Icons.person_remove))
                                         ],
                                       ),
                                     ),
@@ -971,6 +1021,168 @@ class _ProCommonPageState extends State<ProCommonPage> {
                   : const Center(
                       child: Text("No data available yet."),
                     );
+        // ! ADDED SCORES LIST
+        case 5:
+          return Container(
+              height: double.infinity,
+              width: double.infinity,
+              decoration: const BoxDecoration(
+                image: DecorationImage(
+                  colorFilter: ColorFilter.linearToSrgbGamma(),
+                  alignment: Alignment.center,
+                  scale: 1,
+                  opacity: 1,
+                  fit: BoxFit.fill,
+                  image: AssetImage(FileConstants.assetBackground),
+                ),
+              ),
+              child: Padding(
+                padding: EdgeInsets.only(
+                  top: 10,
+                  bottom: 10,
+                  left: (MediaQuery.of(context).size.width * 4) / 100,
+                  right: (MediaQuery.of(context).size.width * 4) / 100,
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.only(top: 20),
+                      child: Text(
+                        "Scores",
+                        style: Theme.of(context)
+                            .textTheme
+                            .headlineSmall
+                            ?.copyWith(color: Colors.blue),
+                      ),
+                    ),
+                    SizedBox(
+                      width: double.infinity,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(
+                            child: GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  scoresMode = "Individual";
+                                });
+                                print(scoresMode);
+                              },
+                              child: FractionallySizedBox(
+                                widthFactor: 0.5,
+                                child: SizedBox(
+                                  child: Text(
+                                    "Single",
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: scoresMode == "Individual"
+                                            ? FontWeight.w900
+                                            : FontWeight.w500),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            child: GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  scoresMode = "Multiplayer";
+                                });
+                                print(scoresMode);
+                              },
+                              child: FractionallySizedBox(
+                                widthFactor: 0.5,
+                                child: SizedBox(
+                                  child: Text(
+                                    "Multi",
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: scoresMode == "Multiplayer"
+                                            ? FontWeight.w900
+                                            : FontWeight.w500),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    if (newFinalIndividualList.isNotEmpty &&
+                        scoresMode ==
+                            'Individual') //? Display this container if individual is selected
+                      Container(
+                        padding: EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(8)),
+                        child: Column(
+                          children: [
+                            const Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Expanded(
+                                  child: Text('Name'),
+                                ),
+                                Expanded(
+                                  child: Text('Score'),
+                                )
+                              ],
+                            ),
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            for (final indiv in newFinalIndividualList)
+                              Column(
+                                children: [
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Expanded(
+                                        child:
+                                            Text(indiv['Name'] ?? "Loading..."),
+                                      ),
+                                      Expanded(
+                                        child: Text(indiv['Score'].toString() ??
+                                            "Loading..."),
+                                      )
+                                    ],
+                                  ),
+                                  const SizedBox(
+                                    height: 3,
+                                  ),
+                                ],
+                              ),
+                          ],
+                        ),
+                      ),
+                    widget.finalGroupList.isNotEmpty &&
+                            scoresMode == "Multiplayer"
+                        ? widget.finalGroupList.keys.any((element) =>
+                                widget.testCodeList.contains(element))
+                            ? Container(
+                                padding: EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(8)),
+                                child:
+                                    customList2(), //copied and modified vinay's code
+                              )
+                            : const Center(
+                                child: Text("No data available yet."),
+                              )
+                        : const SizedBox(),
+                  ],
+                ),
+              ));
 
         default:
           return const SizedBox.shrink();
@@ -1107,6 +1319,25 @@ class _ProCommonPageState extends State<ProCommonPage> {
                               ?.copyWith(color: Colors.orange),
                         ),
                       ),
+                      // ! ADD AN ICON HERE FOR SCORES LIST
+                      if (widget.studentORProf == "Professor")
+                        NavigationRailDestination(
+                          icon: Icon(
+                            Icons.list_alt_rounded,
+                            color: Colors.lightBlue,
+                          ),
+                          selectedIcon: const Icon(
+                            Icons.list_alt_rounded,
+                            color: Colors.blue,
+                          ),
+                          label: Text(
+                            "Scores",
+                            style: Theme.of(context)
+                                .textTheme
+                                .labelSmall
+                                ?.copyWith(color: Colors.orange),
+                          ),
+                        ),
                     ],
                     selectedIconTheme: IconThemeData(color: Colors.white),
                     unselectedIconTheme: IconThemeData(color: Colors.black),
@@ -1215,5 +1446,181 @@ class _ProCommonPageState extends State<ProCommonPage> {
       ]));
     }
     return widgeList;
+  }
+
+  Future<void> handleDelete(int index) async {
+    try {
+      QuerySnapshot studentQuery = await FirebaseFirestore.instance
+          .collection('StudentsDetails')
+          .where('name',
+              isEqualTo: widget.finalStudentListForProfs.values
+                  .elementAt(index)
+                  .toString())
+          .get();
+
+      if (studentQuery.docs.isNotEmpty) {
+        // ! ================UPDATE STUDENT DETAIL=================
+        String studentDocId = studentQuery.docs.first.id;
+        var studentData =
+            studentQuery.docs.first.data() as Map<String, dynamic>;
+
+        Map<String, dynamic> studentSubject = studentData['Subject'];
+        Map<String, dynamic> studentCompletedQuiz =
+            studentData['CompletedQuiz'];
+
+        studentSubject.remove(widget.subTitle);
+
+        if (studentCompletedQuiz[widget.subTitle] != null) {
+          studentCompletedQuiz.remove(widget.subTitle);
+        }
+
+        var studentRef = FirebaseFirestore.instance
+            .collection('StudentsDetails')
+            .doc(studentDocId);
+        await studentRef.update({
+          'CompletedQuiz': studentCompletedQuiz,
+          'Subject': studentSubject,
+        }).whenComplete(() => print('removed subject in student details'));
+
+        // !======================================================
+
+        // ! =============UPDATE PROF DATA=================
+        DocumentSnapshot profQuery = await FirebaseFirestore.instance
+            .collection('ProfessorsDetails')
+            .doc(widget.uid)
+            .get();
+
+        if (profQuery.exists) {
+          var profData = profQuery.data() as Map<String, dynamic>;
+
+          Map<String, dynamic> profSubject =
+              profData['Subject'][widget.subTitle]['StudentList'];
+
+          profSubject.remove(studentDocId);
+
+          var profRef = FirebaseFirestore.instance
+              .collection('ProfessorsDetails')
+              .doc(widget.uid);
+
+          profRef.update({
+            'Subject.${widget.subTitle}.StudentList': profSubject,
+          }).whenComplete(() => print("removed student in subject"));
+        }
+
+        // !==========================================
+      } else {
+        print("Student not found");
+      }
+    } catch (e) {
+      print('error deleting/unenrolling student: $e');
+    }
+  }
+
+  // TODO MODIFY SECOND LIST TO PRODUCE A LIST INSTEAD
+  customList2() {
+    List expectedList = widget.finalGroupList.keys
+        .toSet()
+        .intersection(widget.testCodeList.toSet())
+        .toList();
+    List expectedListIndex = List.empty(growable: true);
+    for (int i = 0; i < widget.testCodeList.length; i++) {
+      for (int j = 0; j < widget.finalGroupList.keys.length; j++) {
+        if (widget.testCodeList.elementAt(i) ==
+            widget.finalGroupList.keys.elementAt(j)) {
+          expectedListIndex.add(i);
+        }
+      }
+    }
+
+    return Column(
+      children: expectedList.asMap().entries.map((entry) {
+        int index = entry.key;
+        return Column(
+          children: _thirdList(index, expectedListIndex),
+        );
+      }).toList(),
+    );
+  }
+
+  _thirdList(int index, List listTemp) {
+    Map tempMap004 = {};
+    List tempMap005 = [];
+    Map tempMap006 = {};
+    List tempMap007 = [];
+    int count = 0;
+
+    List<Widget> widgeList = List.empty(growable: true);
+    tempMap004.addAll(widget.finalGroupList.values.elementAt(index));
+    tempMap004.forEach((key, value) {
+      tempMap005.add(value);
+    });
+    tempMap006.addAll(tempMap005.elementAt(0)["groupMembers"]);
+    tempMap006.forEach((key, value) {
+      tempMap007.add(value);
+    });
+
+    // Split the names, rearrange, and sort alphabetically
+    tempMap007.sort((a, b) {
+      var nameA = a['name'].split(' ');
+      var nameB = b['name'].split(' ');
+
+      var rearrangedA = rearrangeName(nameA);
+      var rearrangedB = rearrangeName(nameB);
+
+      print(rearrangedA);
+      print(rearrangedB);
+
+      return rearrangedA.compareTo(rearrangedB);
+    });
+
+    if (count == 0) {
+      widgeList.add(
+        // Padding(
+        //   padding: const EdgeInsets.only(top: 10),
+        // child:
+        Text(
+          'Quiz: ${widget.testDetailsList[listTemp.elementAt(index)]["Title"]}',
+          style: const TextStyle(
+              fontWeight: FontWeight.bold, fontSize: 15, color: Colors.red),
+        ),
+        // ),
+      );
+    }
+    for (int i = 0; i < tempMap007.length; i++) {
+      var nameParts = tempMap007.elementAt(i)["name"].split(' ');
+      var formattedName = rearrangeName(nameParts);
+
+      widgeList.add(
+          Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+        Expanded(
+          child: Text(
+            formattedName,
+            maxLines: 1,
+          ),
+        ),
+        Expanded(
+          child: Text(
+            tempMap007.elementAt(i)["score"].toString(),
+            maxLines: 1,
+          ),
+        ),
+      ]));
+    }
+    return widgeList;
+  }
+
+  // Function to rearrange the names
+  String rearrangeName(List<String> nameParts) {
+    // Default rearranged name will be the last element (Last Name)
+    var rearrangedName = nameParts.last;
+
+    // If there are more than one name parts, rearrange accordingly
+    if (nameParts.length > 1) {
+      rearrangedName = '${nameParts.last},';
+      for (var i = 0; i < nameParts.length - 1; i++) {
+        rearrangedName += ' ${nameParts[i]}';
+      }
+    }
+    return rearrangedName.trim();
   }
 }
